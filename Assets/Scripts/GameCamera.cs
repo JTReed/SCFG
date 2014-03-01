@@ -34,4 +34,9 @@ public class GameCamera : MonoBehaviour {
         curr += accel * Time.deltaTime * direction;
         return (Mathf.Sign(target - curr) == direction) ? curr : target; // if curr has passed target, return target
     }
+
+    public void SetStatic(bool stat) 
+    {
+        trackSpeed = (stat) ? 0.0f : 100.0f;
+    }
 }

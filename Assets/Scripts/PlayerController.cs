@@ -7,7 +7,9 @@ public class PlayerController : MonoBehaviour {
     public float speed;
     public float acceleration;
     public float gravity;
-    public float jumpHeight;
+    public float jumpSpeed;
+    public float minJumpHeight;
+    public float maxJumpHeight;
 
     private float m_currentSpeed;
     private float m_targetSpeed;
@@ -42,9 +44,7 @@ public class PlayerController : MonoBehaviour {
 
             // Jump
             if (Input.GetButtonDown("Jump")) {
-                // TODO: modify so that you jump higher when held longer
-
-                m_amountToMove.y = jumpHeight;
+                m_amountToMove.y = maxJumpHeight;
                 m_jumping = true;
             }
         }
