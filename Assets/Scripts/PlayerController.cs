@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour {
         m_currentSpeed = IncrementTowards(m_currentSpeed, m_targetSpeed, acceleration);
 
         float moveDirection = Mathf.Sign(m_targetSpeed);
-        if (moveDirection != 0) {
+        if (moveDirection != 0 && m_targetSpeed != 0) {
             // Flip the character sprite if going left
             transform.eulerAngles = (moveDirection < 0) ? Vector3.up * 180 : Vector3.zero;
         }
@@ -64,8 +64,7 @@ public class PlayerController : MonoBehaviour {
         m_amountToMove.y -= gravity * Time.deltaTime;
         m_playerPhysics.Move(m_amountToMove * Time.deltaTime);
 
-        if (Input.GetButtonDown("Fire")) {
-            Debug.Log("FIRE");
+        if (Input.GetButtonDown("Fire") && GameObject.FindGameObjectsWithTag("PlayerProjectile").Length < 3) {
             Instantiate(projectiles[0], transform.position, transform.rotation);
         }
 	}
