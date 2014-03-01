@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour {
     public float jumpSpeed;
     public float minJumpHeight;
     public float maxJumpHeight;
+    public Transform[] projectiles;
 
     private float m_currentSpeed;
     private float m_targetSpeed;
@@ -63,6 +64,10 @@ public class PlayerController : MonoBehaviour {
         m_amountToMove.y -= gravity * Time.deltaTime;
         m_playerPhysics.Move(m_amountToMove * Time.deltaTime);
 
+        if (Input.GetButtonDown("Fire")) {
+            Debug.Log("FIRE");
+            Instantiate(projectiles[0], transform.position, transform.rotation);
+        }
 	}
 
     // Increase curr toward target
