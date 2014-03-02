@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(PlayerPhysics))]
+[RequireComponent(typeof(EntityPhysics))]
+[RequireComponent(typeof(Entity))]
 public class PlayerController : MonoBehaviour {
 
     public float speed;
@@ -19,11 +20,11 @@ public class PlayerController : MonoBehaviour {
     private bool m_jumping;
     private bool m_sliding;
 
-    private PlayerPhysics m_playerPhysics;
+    private EntityPhysics m_playerPhysics;
 
 	// Use this for initialization
 	void Start () {
-        m_playerPhysics = GetComponent<PlayerPhysics>();
+        m_playerPhysics = GetComponent<EntityPhysics>();
 	}
 	
 	// Update is called once per frame

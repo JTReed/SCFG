@@ -21,4 +21,12 @@ public class ProjectileController : MonoBehaviour {
             Destroy(this.gameObject);
         }
 	}
+
+    void OnTriggerEnter2D(Collider2D enemy)
+    {
+        if (enemy.tag == "Enemy") {
+            Destroy(this.gameObject);
+            enemy.gameObject.GetComponent<Entity>().TakeDamage(1);
+        }
+    }
 }

@@ -2,12 +2,13 @@
 using System.Collections;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class PlayerPhysics : MonoBehaviour {
+public class EntityPhysics : MonoBehaviour {
 
     public LayerMask collisionMask;
 
     [HideInInspector]
     public bool grounded;
+    [HideInInspector]
     public bool movementStopped;
 
     private BoxCollider2D m_collider;
