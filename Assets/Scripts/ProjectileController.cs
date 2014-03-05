@@ -4,6 +4,7 @@ using System.Collections;
 public class ProjectileController : MonoBehaviour {
 
     public float speed;
+    public int damage;
 
     private float m_timeCreated;
 
@@ -26,7 +27,7 @@ public class ProjectileController : MonoBehaviour {
     {
         if (enemy.tag == "Enemy") {
             Destroy(this.gameObject);
-            enemy.gameObject.GetComponent<Entity>().TakeDamage(1);
+            enemy.gameObject.GetComponent<Entity>().TakeDamage(damage);
         }
     }
 }
