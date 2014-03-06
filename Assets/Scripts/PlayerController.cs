@@ -10,7 +10,6 @@ public class PlayerController : MonoBehaviour {
     public float acceleration = 100;
     public float gravity = 80;
     public float jumpSpeed = 5;
-    public float minJumpHeight = 5;
     public float maxJumpHeight = 30;
     public float slideDuration = 0.5f;
     public float chargeThreshold = 3.0f;
@@ -19,6 +18,8 @@ public class PlayerController : MonoBehaviour {
     private float m_currentSpeed;
     private float m_targetSpeed;
     private Vector2 m_amountToMove;
+
+    private float m_heightJumped;
 
     private float m_slideStartTime;
     private float m_chargeStartTime;
@@ -50,31 +51,39 @@ public class PlayerController : MonoBehaviour {
 
             if (m_jumping) {
                 m_jumping = false;
+                m_heightJumped = 0;
             }
 
             if (Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump") && !m_sliding) {
                 m_sliding = true;
                 m_animator.SetBool("Sliding", true);
+                m_physics.SetSlideCollider(false);
                 m_slideStartTime = Time.time;
             }
 
             // Jump
             if (Input.GetButtonDown("Jump") && !m_sliding) {
-                m_amountToMove.y = maxJumpHeight;
+                //m_amountToMove.y = maxJumpHeight;
                 m_jumping = true;
             }
         }
 
 	    //handle input
         if (!m_sliding) {
-            m_targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
+            m_targetSpeed = (Input.GetAxisRaw("Horizontal") != 0) ? Mathf.Sign(Input.GetAxisRaw("Horizontal")) * speed : 0;
             m_currentSpeed = IncrementTowards(m_currentSpeed, m_targetSpeed, acceleration);
+
+            if (m_jumping && Input.GetButton("Jump") && m_heightJumped < maxJumpHeight) {
+                m_amountToMove.y += jumpSpeed;
+                m_heightJumped += jumpSpeed;
+            }
         }
         else {
             if (Time.time - m_slideStartTime >= slideDuration) {
                 // stop sliding
                 m_sliding = false;
                 m_animator.SetBool("Sliding", false);
+                m_physics.SetSlideCollider(true);
             }
             else {
                 // move in correct direction

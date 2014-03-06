@@ -125,6 +125,17 @@ public class EntityPhysics : MonoBehaviour {
 
         m_colliderSize = sz * m_colliderScale;
         m_colliderCenter = ct * m_colliderScale;
+    }
 
+    public void SetSlideCollider(bool reset)
+    {
+        float tmp = m_colliderSize.x;
+        m_colliderSize.x = m_colliderSize.y;
+        m_colliderSize.y = tmp;
+
+        m_colliderCenter.y = (reset) ? 0 : -m_colliderSize.y / 4.0f;
+
+        m_collider.size = m_colliderSize / m_colliderScale;
+        m_collider.center = m_colliderCenter / m_colliderScale;
     }
 }
