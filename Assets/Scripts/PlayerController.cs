@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour {
     private float m_heightJumped;
 
     private float m_slideStartTime;
+    private float m_slideSpeedMultiplier = 1.5f;
     private float m_chargeStartTime;
 
     private bool m_jumping;
@@ -91,6 +92,7 @@ public class PlayerController : MonoBehaviour {
                     // right if facing right and left if facing left
                     m_currentSpeed = (transform.eulerAngles.y == 0) ? speed : -speed;
                 }
+				m_currentSpeed *= m_slideSpeedMultiplier;
             }
         }
      
