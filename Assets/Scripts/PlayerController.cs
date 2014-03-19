@@ -19,8 +19,6 @@ public class PlayerController : MonoBehaviour {
     private float m_targetSpeed;
     private Vector2 m_amountToMove;
 
-    private float m_heightJumped;
-
     private float m_slideStartTime;
     private float m_slideSpeedMultiplier = 1.5f;
     private float m_chargeStartTime;
@@ -52,7 +50,6 @@ public class PlayerController : MonoBehaviour {
 
             if (m_jumping) {
                 m_jumping = false;
-                m_heightJumped = 0;
             }
 
             if (Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump") && !m_sliding) {
@@ -64,7 +61,7 @@ public class PlayerController : MonoBehaviour {
 
             // Jump
             if (Input.GetButtonDown("Jump") && !m_sliding) {
-                //m_amountToMove.y = maxJumpHeight;
+                m_amountToMove.y = maxJumpHeight;
                 m_jumping = true;
             }
         }
@@ -73,11 +70,6 @@ public class PlayerController : MonoBehaviour {
         if (!m_sliding) {
             m_targetSpeed = (Input.GetAxisRaw("Horizontal") != 0) ? Mathf.Sign(Input.GetAxisRaw("Horizontal")) * speed : 0;
             m_currentSpeed = IncrementTowards(m_currentSpeed, m_targetSpeed, acceleration);
-
-            if (m_jumping && Input.GetButton("Jump") && m_heightJumped < maxJumpHeight) {
-                m_amountToMove.y += jumpSpeed;
-                m_heightJumped += jumpSpeed;
-            }
         }
         else {
             if (Time.time - m_slideStartTime >= slideDuration) {
