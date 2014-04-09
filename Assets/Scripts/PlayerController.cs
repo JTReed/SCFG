@@ -9,20 +9,24 @@ public class PlayerController : MonoBehaviour {
     public float speed = 10;
     public float acceleration = 100;
     public float gravity = 80;
-    public float jumpSpeed = 5;
-    public float maxJumpHeight = 30;
+    public float jumpHeight = 30;
     public float slideDuration = 0.5f;
     public float chargeThreshold = 3.0f;
-    public Transform[] projectiles;
+    public Transform[] projectiles = new Transform[3];
 
+    // basic movement vars
     private float m_currentSpeed;
     private float m_targetSpeed;
     private Vector2 m_amountToMove;
 
+    // sliding vars
     private float m_slideStartTime;
     private float m_slideSpeedMultiplier = 1.5f;
+
+    // charging vars
     private float m_chargeStartTime;
 
+    // state booleans
     private bool m_jumping;
     private bool m_sliding;
     private bool m_charging;
@@ -38,6 +42,7 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //MOVEMENT
         // handle "sticking" when stopped horizontally
         if (m_physics.movementStopped) {
             m_targetSpeed = 0;
@@ -61,12 +66,12 @@ public class PlayerController : MonoBehaviour {
 
             // Jump
             if (Input.GetButtonDown("Jump") && !m_sliding) {
-                m_amountToMove.y = maxJumpHeight;
+                m_amountToMove.y = jumpHeight;
                 m_jumping = true;
             }
         }
 
-	    //handle input
+	    //handle directional input
         if (!m_sliding) {
             m_targetSpeed = (Input.GetAxisRaw("Horizontal") != 0) ? Mathf.Sign(Input.GetAxisRaw("Horizontal")) * speed : 0;
             m_currentSpeed = IncrementTowards(m_currentSpeed, m_targetSpeed, acceleration);
@@ -88,20 +93,27 @@ public class PlayerController : MonoBehaviour {
             }
         }
      
+        // need to keep track of which direction the character is facing
         float facing = Mathf.Sign(m_targetSpeed);
         if (facing != 0 && m_targetSpeed != 0) {
             // Flip the character sprite if going left
             transform.eulerAngles = (facing < 0) ? Vector3.up * 180 : Vector3.zero;
         }
+<<<<<<< HEAD
 
         if (Input.GetButtonUp("Jump")) {
             m_amountToMove.y = (m_amountToMove.y >= 0) ? 10 : m_amountToMove.y;
         }
 
+=======
+        
+        // move
+>>>>>>> ec9203d72906768784b8a1c3e608625569542856
         m_amountToMove.x = m_currentSpeed;
         m_amountToMove.y -= gravity * Time.deltaTime;
         m_physics.Move(m_amountToMove * Time.deltaTime);
 
+        // FIRING
         if (Input.GetButtonDown("Fire") && GameObject.FindGameObjectsWithTag("PlayerProjectile").Length < 3 && !m_sliding) {
             // can fire anytime except when sliding
             m_charging = true;
@@ -123,15 +135,12 @@ public class PlayerController : MonoBehaviour {
                 }
             } else {
                 m_charging = false;
-                //Debug.Log("release charge");
 
                 if (chargeTime >= chargeThreshold) {
-                    //Debug.Log("PEW");
                     Instantiate(projectiles[1], transform.position, transform.rotation);
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
                 else if (chargeTime >= chargeThreshold / 3.0f) {
-                    //Debug.Log("pew");
                     Instantiate(projectiles[0], transform.position, transform.rotation);
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
