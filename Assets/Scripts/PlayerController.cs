@@ -94,6 +94,10 @@ public class PlayerController : MonoBehaviour {
             transform.eulerAngles = (facing < 0) ? Vector3.up * 180 : Vector3.zero;
         }
 
+        if (Input.GetButtonUp("Jump")) {
+            m_amountToMove.y = (m_amountToMove.y >= 0) ? 10 : m_amountToMove.y;
+        }
+
         m_amountToMove.x = m_currentSpeed;
         m_amountToMove.y -= gravity * Time.deltaTime;
         m_physics.Move(m_amountToMove * Time.deltaTime);
