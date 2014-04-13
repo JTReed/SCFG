@@ -1,30 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(EntityPhysics))]
 [RequireComponent(typeof(Entity))]
 [RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour {
 
+    // basic movement vars
     public float speed = 10;
     public float acceleration = 100;
     public float gravity = 80;
-    public float jumpHeight = 30;
-    public float slideDuration = 0.5f;
-    public float chargeThreshold = 3.0f;
-    public Transform[] projectiles = new Transform[3];
+    public float jumpSpeed = 30;
 
-    // basic movement vars
     private float m_currentSpeed;
     private float m_targetSpeed;
     private Vector2 m_amountToMove;
 
     // sliding vars
-    private float m_slideStartTime;
-    private float m_slideSpeedMultiplier = 1.5f;
+    public float slideDuration = 0.5f;
 
-    // charging vars
+    private float m_slideStartTime;
+    private float m_slideSpeedMultiplier = 2.0f;
+
+    // firing vars
+    public float chargeThreshold = 3.0f;
+
     private float m_chargeStartTime;
+    private ObjectPool bulletStage1;
+    //private ObjectPool bulletStage2;
+    //private ObjectPool bulletStage3;
 
     // state booleans
     private bool m_jumping;
@@ -38,10 +43,12 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
         m_physics = GetComponent<EntityPhysics>();
         m_animator = GetComponent<Animator>();
+        bulletStage1 = GetComponent<ObjectPool>(); 
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         //MOVEMENT
         // handle "sticking" when stopped horizontally
         if (m_physics.movementStopped) {
@@ -66,7 +73,7 @@ public class PlayerController : MonoBehaviour {
 
             // Jump
             if (Input.GetButtonDown("Jump") && !m_sliding) {
-                m_amountToMove.y = jumpHeight;
+                m_amountToMove.y = jumpSpeed;
                 m_jumping = true;
             }
         }
@@ -99,16 +106,10 @@ public class PlayerController : MonoBehaviour {
             // Flip the character sprite if going left
             transform.eulerAngles = (facing < 0) ? Vector3.up * 180 : Vector3.zero;
         }
-<<<<<<< HEAD
 
         if (Input.GetButtonUp("Jump")) {
-            m_amountToMove.y = (m_amountToMove.y >= 0) ? 10 : m_amountToMove.y;
+            m_amountToMove.y = (m_amountToMove.y >= 5) ? 5 : m_amountToMove.y;
         }
-
-=======
-        
-        // move
->>>>>>> ec9203d72906768784b8a1c3e608625569542856
         m_amountToMove.x = m_currentSpeed;
         m_amountToMove.y -= gravity * Time.deltaTime;
         m_physics.Move(m_amountToMove * Time.deltaTime);
@@ -117,7 +118,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetButtonDown("Fire") && GameObject.FindGameObjectsWithTag("PlayerProjectile").Length < 3 && !m_sliding) {
             // can fire anytime except when sliding
             m_charging = true;
-            Instantiate(projectiles[0], transform.position, transform.rotation);
+            bulletStage1.CreateObject();
             m_chargeStartTime = Time.time;
         }
 
@@ -137,11 +138,11 @@ public class PlayerController : MonoBehaviour {
                 m_charging = false;
 
                 if (chargeTime >= chargeThreshold) {
-                    Instantiate(projectiles[1], transform.position, transform.rotation);
+                    //create
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
                 else if (chargeTime >= chargeThreshold / 3.0f) {
-                    Instantiate(projectiles[0], transform.position, transform.rotation);
+                    // create
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
             }
