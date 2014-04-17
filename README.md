@@ -16,3 +16,5 @@ Controls:
 - Z to Shoot/Charge
 - X to jump
 - Down + X to slide 
+
+[PLAY IN BROWSER](https://dl.dropboxusercontent.com/u/15935800/Unity%20Web%20Player%20Games/SCSG/SCSG.html) (Requires Unity Web Player)
