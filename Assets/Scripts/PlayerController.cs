@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetButtonDown("Slide")) { Debug.Log("sliding"); }
         //MOVEMENT
         // handle "sticking" when stopped horizontally
         if (m_physics.movementStopped) {
@@ -64,11 +65,13 @@ public class PlayerController : MonoBehaviour {
                 m_jumping = false;
             }
 
-            if (Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump") && !m_sliding) {
-                m_sliding = true;
-                m_animator.SetBool("Sliding", true);
-                m_physics.SetSlideCollider(false);
-                m_slideStartTime = Time.time;
+            if (!m_sliding) {
+                if ((Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump")) || Input.GetButtonDown("Slide")) {
+                    m_sliding = true;
+                    m_animator.SetBool("Sliding", true);
+                    m_physics.SetSlideCollider(false);
+                    m_slideStartTime = Time.time;
+                }
             }
 
             // Jump
