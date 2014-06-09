@@ -4,36 +4,44 @@ using System.Collections.Generic;
 
 public class ObjectPool : MonoBehaviour {
 
-    public GameObject poolObject;
     public int poolSize;
     public bool growToFit;
-
-    private List<GameObject> pool;
+	
+	private GameObject m_poolObject;
+	private List<GameObject> m_pool;
 
 	// Use this for initialization
 	void Start () {
-        pool = new List<GameObject>();
+        m_pool = new List<GameObject>();
 
         for (int i = 0; i < poolSize; i++) {
-            GameObject obj = (GameObject)Instantiate(poolObject);
+            GameObject obj = (GameObject)Instantiate(m_poolObject);
             obj.SetActive(false);
             obj.transform.position = transform.position;
             obj.transform.rotation = transform.rotation;
-            pool.Add(obj);
+            m_pool.Add(obj);
         }
 	}
 
     public void CreateObject()
     {
-        for (int i = 0; i < pool.Count; i++) {
-            if (!pool[i].activeInHierarchy) {
-                pool[i].SetActive(true);
-                pool[i].transform.position = transform.position;
-                pool[i].transform.rotation = transform.rotation;
+        for (int i = 0; i < m_pool.Count; i++) {
+            if (!m_pool[i].activeInHierarchy) {
+                m_pool[i].SetActive(true);
+                m_pool[i].transform.position = transform.position;
+                m_pool[i].transform.rotation = transform.rotation;
                 break;
             }
         }
-        
-
     }
+
+	public void SetPoolObject(GameObject obj)
+	{
+		m_poolObject = obj;
+	}
+
+	public void StartPool()
+	{
+		Start();
+	}
 }

@@ -15,8 +15,8 @@ public class GameManager : MonoBehaviour {
 	
 	private void SpawnPlayer() {
         // Have spawnpoint gizmo
-        Object clone = Instantiate(player, Vector2.zero, Quaternion.identity);
-        mainCamera.SetTarget((clone as GameObject).transform);
+        GameObject clone = Instantiate(player, Vector2.zero, Quaternion.identity) as GameObject;
+        mainCamera.SetTarget(clone.transform);
 
     }
 }

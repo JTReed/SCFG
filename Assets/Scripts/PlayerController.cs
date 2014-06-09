@@ -27,9 +27,11 @@ public class PlayerController : MonoBehaviour {
     public float chargeThreshold = 3.0f;
 
     private float m_chargeStartTime;
-    private ObjectPool bulletStage1;
-    //private ObjectPool bulletStage2;
-    //private ObjectPool bulletStage3;
+    /*private ObjectPool bulletStage1;
+  	public GameObject bulletStage2;
+    public GameObject bulletStage3;*/
+	public BulletPool bulletPool; 
+
 
     // state booleans
     private bool m_jumping;
@@ -43,7 +45,7 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
         m_physics = GetComponent<EntityPhysics>();
         m_animator = GetComponent<Animator>();
-        bulletStage1 = GetComponent<ObjectPool>(); 
+        bulletPool = GetComponent<BulletPool>(); 
 	}
 
     // Update is called once per frame
@@ -121,7 +123,7 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetButtonDown("Fire") && GameObject.FindGameObjectsWithTag("PlayerProjectile").Length < 3 && !m_sliding) {
             // can fire anytime except when sliding
             m_charging = true;
-            bulletStage1.CreateObject();
+            bulletPool.CreateObject(1);
             m_chargeStartTime = Time.time;
         }
 
@@ -141,11 +143,11 @@ public class PlayerController : MonoBehaviour {
                 m_charging = false;
 
                 if (chargeTime >= chargeThreshold) {
-                    //create
+					bulletPool.CreateObject(2);
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
                 else if (chargeTime >= chargeThreshold / 3.0f) {
-                    // create
+					bulletPool.CreateObject(3);
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
             }
