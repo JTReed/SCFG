@@ -65,7 +65,8 @@ public class PlayerController : MonoBehaviour {
 
             if (m_jumping) {
                 m_jumping = false;
-            }
+				m_animator.SetBool("Jumping", false);
+			}
 
             if (!m_sliding) {
                 if ((Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump")) || Input.GetButtonDown("Slide")) {
@@ -80,6 +81,7 @@ public class PlayerController : MonoBehaviour {
             if (Input.GetButtonDown("Jump") && !m_sliding) {
                 m_amountToMove.y = jumpSpeed;
                 m_jumping = true;
+				m_animator.SetBool("Jumping", true);
             }
         }
 
@@ -111,6 +113,8 @@ public class PlayerController : MonoBehaviour {
             // Flip the character sprite if going left
             transform.eulerAngles = (facing < 0) ? Vector3.up * 180 : Vector3.zero;
         }
+
+		m_animator.SetFloat("Speed", Mathf.Abs(m_currentSpeed));
 
         if (Input.GetButtonUp("Jump")) {
             m_amountToMove.y = (m_amountToMove.y >= 5) ? 5 : m_amountToMove.y;
