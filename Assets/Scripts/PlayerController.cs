@@ -25,8 +25,7 @@ public class PlayerController : MonoBehaviour {
 
     // firing vars
     public float chargeThreshold = 3.0f;
-
-    private float m_chargeStartTime;
+    private float m_lastShotTime;
     /*private ObjectPool bulletStage1;
   	public GameObject bulletStage2;
     public GameObject bulletStage3;*/
@@ -66,6 +65,7 @@ public class PlayerController : MonoBehaviour {
             if (m_jumping) {
                 m_jumping = false;
 				m_animator.SetBool("Jumping", false);
+				m_animator.SetBool ("Falling", false);
 			}
 
             if (!m_sliding) {
@@ -121,6 +121,12 @@ public class PlayerController : MonoBehaviour {
         }
         m_amountToMove.x = m_currentSpeed;
         m_amountToMove.y -= gravity * Time.deltaTime;
+
+		if(m_jumping) Debug.Log ("jump speed: " + jumpSpeed + ", negative speed: " + m_amountToMove.y );
+		if(m_jumping && m_amountToMove.y < -5.0) {
+			m_animator.SetBool("Falling", true);
+		}
+
         m_physics.Move(m_amountToMove * Time.deltaTime);
 
         // FIRING
@@ -128,11 +134,12 @@ public class PlayerController : MonoBehaviour {
             // can fire anytime except when sliding
             m_charging = true;
             bulletPool.CreateObject(1);
-            m_chargeStartTime = Time.time;
+            m_lastShotTime = Time.time;
+			m_animator.SetBool("Shooting", true);
         }
 
         if (m_charging) {
-            float chargeTime = Time.time - m_chargeStartTime;
+            float chargeTime = Time.time - m_lastShotTime;
             Debug.Log("chargetime: " + chargeTime + " , chargethresh: " + chargeThreshold);
             if(Input.GetButton("Fire")) {
                 if (chargeTime >= chargeThreshold) {
@@ -154,8 +161,11 @@ public class PlayerController : MonoBehaviour {
 					bulletPool.CreateObject(3);
                     m_animator.SetInteger("ChargeLevel", 0);
                 }
+				m_lastShotTime = Time.time;
             }
-        }
+        } else if(m_animator.GetBool("Shooting") && (Time.time - m_lastShotTime) >= 1.0f) {
+			m_animator.SetBool("Shooting", false);
+		}
 	}
 
     // Increase curr toward target
