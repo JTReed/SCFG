@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour {
                 if ((Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump")) || Input.GetButtonDown("Slide")) {
                     m_sliding = true;
                     m_animator.SetBool("Sliding", true);
-                    m_physics.SetSlideCollider(false);
+                    //m_physics.SetSlideCollider(false);
                     m_slideStartTime = Time.time;
                 }
             }
@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour {
                 // stop sliding
                 m_sliding = false;
                 m_animator.SetBool("Sliding", false);
-                m_physics.SetSlideCollider(true);
+                //m_physics.SetSlideCollider(true);
             }
             else {
                 // move in correct direction
