@@ -37,12 +37,14 @@ public class PlayerController : MonoBehaviour {
     private bool m_sliding;
     private bool m_charging;
 
+	private Entity m_entity;
     private EntityPhysics m_physics;
     private Animator m_animator;
 
 	// Use this for initialization
 	void Start () {
         m_physics = GetComponent<EntityPhysics>();
+		m_entity = GetComponent<Entity>();
         m_animator = GetComponent<Animator>();
         bulletPool = GetComponent<BulletPool>(); 
 	}
@@ -165,6 +167,14 @@ public class PlayerController : MonoBehaviour {
             }
         } else if(m_animator.GetBool("Shooting") && (Time.time - m_lastShotTime) >= 1.0f) {
 			m_animator.SetBool("Shooting", false);
+		}
+	}
+
+	void OnTriggerEnter2D(Collider2D collider)
+	{
+		if( collider.tag == "Enemy"){
+			Debug.Log("collided with enemy");
+			m_entity.TakeDamage(1);
 		}
 	}
 

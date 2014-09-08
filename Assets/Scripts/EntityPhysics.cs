@@ -24,7 +24,8 @@ public class EntityPhysics : MonoBehaviour {
 
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 	    m_collider = GetComponent<BoxCollider2D>();
         m_colliderScale = transform.localScale.x; // Assume both x and y have same scale value
 
@@ -138,4 +139,6 @@ public class EntityPhysics : MonoBehaviour {
         m_collider.size = m_colliderSize / m_colliderScale;
         m_collider.center = m_colliderCenter / m_colliderScale;
     }
+
+
 }
