@@ -1,10 +1,10 @@
-Project SGSC
+Project SCFG
 ================
 *by Jackson Reed*
 
 **2D Action Platformer in Unity inspired by classic Mega Man games**
 
-My first game and currently in progess, SCSG (working title) is a small action platformer made using Unity's 2D tools. 
+My first game and currently in progess, SCFG (working title) is an action platformer made using Unity's 2D tools. 
 
 Goals for completion
 - a full stage; complete with a boss at the end
