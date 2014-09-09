@@ -2,7 +2,9 @@
   <MonoDevelop.Ide.Workspace />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PlayerController.cs">
     <Files>
-      <File FileName="Assets\Scripts\PlayerController.cs" Line="13" Column="31" />
+      <File FileName="Assets\Scripts\PlayerController.cs" Line="177" Column="25" />
+      <File FileName="Assets\Scripts\EntityPhysics.cs" Line="33" Column="3" />
+      <File FileName="Assets\Scripts\Entity.cs" Line="13" Column="19" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

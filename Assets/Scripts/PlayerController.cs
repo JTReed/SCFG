@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Slide")) { Debug.Log("sliding"); }
         //MOVEMENT
         // handle "sticking" when stopped horizontally
         if (m_physics.movementStopped) {
@@ -101,11 +100,11 @@ public class PlayerController : MonoBehaviour {
             }
             else {
                 // move in correct direction
-                if (m_targetSpeed == 0) {
+                /*if (m_targetSpeed == 0) {
                     // right if facing right and left if facing left
                     m_currentSpeed = (transform.eulerAngles.y == 0) ? speed : -speed;
-                }
-				m_currentSpeed *= m_slideSpeedMultiplier;
+                }*/
+				m_currentSpeed = ((transform.eulerAngles.y == 0) ? speed : -speed) * m_slideSpeedMultiplier;
             }
         }
      
