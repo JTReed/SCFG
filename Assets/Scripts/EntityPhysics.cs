@@ -11,25 +11,25 @@ public class EntityPhysics : MonoBehaviour {
     [HideInInspector]
     public bool movementStopped;
 
-    private BoxCollider2D m_collider;
-    private Vector2 m_colliderSize;
-    private Vector2 m_colliderCenter;
-    private float m_colliderScale;
+    private BoxCollider2D collider;
+    private Vector2 colliderSize;
+    private Vector2 colliderCenter;
+    private float colliderScale;
 
-    private int m_raycastDivisions = 3;
-    private float m_collisionSkin = .005f;
+    private int raycastDivisions = 3;
+    private float collisionSkin = .005f;
 
-    private Ray2D m_ray;
-    private RaycastHit2D m_hit;
+    private Ray2D ray;
+    private RaycastHit2D hit;
 
 
 	// Use this for initialization
 	void Start () 
 	{
-	    m_collider = GetComponent<BoxCollider2D>();
-        m_colliderScale = transform.localScale.x; // Assume both x and y have same scale value
+	    collider = GetComponent<BoxCollider2D>();
+        colliderScale = transform.localScale.x; // Assume both x and y have same scale value
 
-        ScaleCollider(m_collider.size, m_collider.center);
+        ScaleCollider(collider.size, collider.center);
 	}
 
     public void Move(Vector2 amountToMove)
@@ -40,28 +40,28 @@ public class EntityPhysics : MonoBehaviour {
 
         grounded = false; // reset each frame
         // collision UP/DOWN
-        for (int i = 0; i < m_raycastDivisions; i++) {
+        for (int i = 0; i < raycastDivisions; i++) {
             float direction = Mathf.Sign(deltaY); // jumping or falling?
             // player position + collider offset - half collider to reach left side of collider
-            // Add an offset for each ray, creating m_raycastDivisions number of rays
-            float x = (playerPos.x + m_colliderCenter.x - m_colliderSize.x / 2) + (m_colliderSize.x / (m_raycastDivisions - 1)) * i;
+            // Add an offset for each ray, creating raycastDivisions number of rays
+            float x = (playerPos.x + colliderCenter.x - colliderSize.x / 2) + (colliderSize.x / (raycastDivisions - 1)) * i;
             // direction points toward top or bottom - default top
-            float y = playerPos.y + m_colliderCenter.y + m_colliderSize.y / 2 * direction;
+            float y = playerPos.y + colliderCenter.y + colliderSize.y / 2 * direction;
 
             // create ray and check collisions
-            m_ray = new Ray2D(new Vector2(x, y), new Vector2(0, direction));
-            Debug.DrawRay(m_ray.origin, m_ray.direction);
+            ray = new Ray2D(new Vector2(x, y), new Vector2(0, direction));
+            Debug.DrawRay(ray.origin, ray.direction);
 
-            //m_hit = Physics2D.Raycast(m_ray.origin, m_ray.direction, Mathf.Abs(deltaY) + m_collisionSkin, collisionMask);
-            if(Physics2D.Raycast(m_ray.origin, m_ray.direction, Mathf.Abs(deltaY) + m_collisionSkin, collisionMask)) {
-                m_hit = Physics2D.Raycast(m_ray.origin, m_ray.direction, Mathf.Abs(deltaY) + m_collisionSkin, collisionMask);
+            //hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Abs(deltaY) + collisionSkin, collisionMask);
+            if(Physics2D.Raycast(ray.origin, ray.direction, Mathf.Abs(deltaY) + collisionSkin, collisionMask)) {
+                hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Abs(deltaY) + collisionSkin, collisionMask);
                 // get distance between object and collider
-                float distance = Mathf.Abs(m_ray.origin.y - m_hit.point.y);
+                float distance = Mathf.Abs(ray.origin.y - hit.point.y);
                 
-                if (distance > m_collisionSkin) {
+                if (distance > collisionSkin) {
                     // not collided
                     // "warp" to skin distance away from collider
-                    deltaY = (distance * direction) - (m_collisionSkin * direction);
+                    deltaY = (distance * direction) - (collisionSkin * direction);
                 }
                 else {
                     // collided
@@ -75,21 +75,21 @@ public class EntityPhysics : MonoBehaviour {
         // collision LEFT/RIGHT
         movementStopped = false;
         if(deltaX != 0) {
-            for (int i = 0; i < m_raycastDivisions; i++) {
+            for (int i = 0; i < raycastDivisions; i++) {
                 float direction = Mathf.Sign(deltaX); // left or right?
-                float x = playerPos.x + m_colliderCenter.x + m_colliderSize.x / 2 * direction;
-                float y = (playerPos.y + m_colliderCenter.y - m_colliderSize.y / 2) + (m_colliderSize.y / m_raycastDivisions) * i;
+                float x = playerPos.x + colliderCenter.x + colliderSize.x / 2 * direction;
+                float y = (playerPos.y + colliderCenter.y - colliderSize.y / 2) + (colliderSize.y / raycastDivisions) * i;
 
-                m_ray = new Ray2D(new Vector2(x, y), new Vector2(direction, 0));
-                Debug.DrawRay(m_ray.origin, m_ray.direction);
+                ray = new Ray2D(new Vector2(x, y), new Vector2(direction, 0));
+                Debug.DrawRay(ray.origin, ray.direction);
 
-                if (Physics2D.Raycast(m_ray.origin, m_ray.direction, Mathf.Abs(deltaX) + m_collisionSkin, collisionMask)) {
-                    m_hit = Physics2D.Raycast(m_ray.origin, m_ray.direction, Mathf.Abs(deltaX) + m_collisionSkin, collisionMask);
+                if (Physics2D.Raycast(ray.origin, ray.direction, Mathf.Abs(deltaX) + collisionSkin, collisionMask)) {
+                    hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Abs(deltaX) + collisionSkin, collisionMask);
 
-                    float distance = Mathf.Abs(m_ray.origin.x - m_hit.point.x);
+                    float distance = Mathf.Abs(ray.origin.x - hit.point.x);
 
-                    if (distance > m_collisionSkin) {
-                        deltaX = (distance * direction) - (m_collisionSkin * direction);
+                    if (distance > collisionSkin) {
+                        deltaX = (distance * direction) - (collisionSkin * direction);
                     }
                     else {
                         deltaX = 0;
@@ -102,11 +102,11 @@ public class EntityPhysics : MonoBehaviour {
         // collision DIR OF MOVEMENT when in air
         if (!grounded && !movementStopped) {
             Vector2 playerDirection = new Vector2(deltaX, deltaY);
-            Vector2 origin = new Vector2(playerPos.x + m_colliderCenter.x + (m_colliderSize.x / 2 * Mathf.Sign(deltaX)), 
-                playerPos.y + m_colliderCenter.y + (m_colliderSize.y / 2 * Mathf.Sign(deltaY)));
-            m_ray = new Ray2D(origin, playerDirection.normalized);
-            Debug.DrawRay(m_ray.origin, m_ray.direction);
-            if(Physics2D.Raycast(m_ray.origin, m_ray.direction, Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY), collisionMask)) {
+            Vector2 origin = new Vector2(playerPos.x + colliderCenter.x + (colliderSize.x / 2 * Mathf.Sign(deltaX)), 
+                playerPos.y + colliderCenter.y + (colliderSize.y / 2 * Mathf.Sign(deltaY)));
+            ray = new Ray2D(origin, playerDirection.normalized);
+            Debug.DrawRay(ray.origin, ray.direction);
+            if(Physics2D.Raycast(ray.origin, ray.direction, Mathf.Sqrt(deltaX * deltaX + deltaY * deltaY), collisionMask)) {
                 grounded = true;
                 deltaY = 0;
             }
@@ -121,23 +121,23 @@ public class EntityPhysics : MonoBehaviour {
     // Modify calculations to take rascaled sprites into account
     private void ScaleCollider(Vector2 sz, Vector2 ct)
     {
-        m_collider.size = sz;
-        m_collider.center = ct;
+        collider.size = sz;
+        collider.center = ct;
 
-        m_colliderSize = sz * m_colliderScale;
-        m_colliderCenter = ct * m_colliderScale;
+        colliderSize = sz * colliderScale;
+        colliderCenter = ct * colliderScale;
     }
 
     public void SetSlideCollider(bool reset)
     {
-        float tmp = m_colliderSize.x;
-        m_colliderSize.x = m_colliderSize.y;
-        m_colliderSize.y = tmp;
+        float tmp = colliderSize.x;
+        colliderSize.x = colliderSize.y;
+        colliderSize.y = tmp;
 
-        m_colliderCenter.y = (reset) ? 0 : -m_colliderSize.y / 4.0f;
+        colliderCenter.y = (reset) ? 0 : -colliderSize.y / 4.0f;
 
-        m_collider.size = m_colliderSize / m_colliderScale;
-        m_collider.center = m_colliderCenter / m_colliderScale;
+        collider.size = colliderSize / colliderScale;
+        collider.center = colliderCenter / colliderScale;
     }
 
 

@@ -6,9 +6,9 @@ public class ProjectileController : MonoBehaviour {
     public float speed = 30;
     public int damage = 1;
 
-    private float m_timeCreated;
+    private float timeCreated;
 
-    private const float m_lifeSpan = 1;
+    private const float lifeSpan = 1;
 
 
     void Awake()
@@ -18,7 +18,7 @@ public class ProjectileController : MonoBehaviour {
 
     void OnEnable()
     {
-        m_timeCreated = Time.time;
+        timeCreated = Time.time;
     }
 
     void OnDisable()
@@ -30,7 +30,7 @@ public class ProjectileController : MonoBehaviour {
     void Update()
     {
         transform.Translate(new Vector2(speed * Time.deltaTime, 0));
-        if (Time.time - m_timeCreated >= m_lifeSpan) {
+        if (Time.time - timeCreated >= lifeSpan) {
             gameObject.SetActive(false);
         }
     }

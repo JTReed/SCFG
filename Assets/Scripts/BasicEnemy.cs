@@ -9,35 +9,35 @@ public class BasicEnemy : MonoBehaviour {
     public float acceleration;
     public float gravity;
 
-    private float m_currentSpeed;
-    private float m_targetSpeed;
-    private Vector2 m_amountToMove;
+    private float currentSpeed;
+    private float targetSpeed;
+    private Vector2 amountToMove;
 
-    private EntityPhysics m_enemyPhysics;
+    private EntityPhysics enemyPhysics;
 
 	// Use this for initialization
 	void Start () {
-        m_enemyPhysics = GetComponent<EntityPhysics>();
+        enemyPhysics = GetComponent<EntityPhysics>();
 
-        m_targetSpeed = 0;
-        m_currentSpeed = 0;
+        targetSpeed = 0;
+        currentSpeed = 0;
 	}
 	
 	// Update is called once per frame
 	void Update () {
         // handle "sticking" when stopped horizontally
-        if (m_enemyPhysics.movementStopped) {
-            m_targetSpeed = 0;
-            m_currentSpeed = 0;
+        if (enemyPhysics.movementStopped) {
+            targetSpeed = 0;
+            currentSpeed = 0;
         }
 
-        if (m_enemyPhysics.grounded) {
-            m_amountToMove.y = 0;
+        if (enemyPhysics.grounded) {
+            amountToMove.y = 0;
         }
 
-        m_amountToMove.x = m_currentSpeed;
-        m_amountToMove.y -= gravity * Time.deltaTime;
-        m_enemyPhysics.Move(m_amountToMove * Time.deltaTime);
+        amountToMove.x = currentSpeed;
+        amountToMove.y -= gravity * Time.deltaTime;
+        enemyPhysics.Move(amountToMove * Time.deltaTime);
 
 	}
 

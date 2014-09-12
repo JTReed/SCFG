@@ -13,40 +13,47 @@ public class PlayerController : MonoBehaviour {
     public float gravity = 80;
     public float jumpSpeed = 30;
 
-    private float m_currentSpeed;
-    private float m_targetSpeed;
-    private Vector2 m_amountToMove;
+    private float currentSpeed;
+    private float targetSpeed;
+    private Vector2 amountToMove;
 
     // sliding vars
     public float slideDuration = 0.5f;
 
-    private float m_slideStartTime;
-    private float m_slideSpeedMultiplier = 2.0f;
+    private float slideStartTime;
+    private float slideSpeedMultiplier = 2.0f;
 
     // firing vars
     public float chargeThreshold = 3.0f;
-    private float m_lastShotTime;
+    private float lastShotTime;
     /*private ObjectPool bulletStage1;
   	public GameObject bulletStage2;
     public GameObject bulletStage3;*/
 	public BulletPool bulletPool; 
 
+	//damage vars
+	public float invincibleTime;
+	private float damageTime;
 
     // state booleans
-    private bool m_jumping;
-    private bool m_sliding;
-    private bool m_charging;
+    private bool jumping;
+    private bool sliding;
+    private bool charging;
+	private bool damaged;
+	private bool invincible;
 
-	private Entity m_entity;
-    private EntityPhysics m_physics;
-    private Animator m_animator;
+	private Entity entity;
+    private EntityPhysics physics;
+    private Animator animator;
+	private SpriteRenderer sprite;
 
 	// Use this for initialization
 	void Start () {
-        m_physics = GetComponent<EntityPhysics>();
-		m_entity = GetComponent<Entity>();
-        m_animator = GetComponent<Animator>();
+        physics = GetComponent<EntityPhysics>();
+		entity = GetComponent<Entity>();
+        animator = GetComponent<Animator>();
         bulletPool = GetComponent<BulletPool>(); 
+		sprite = GetComponent<SpriteRenderer>();
 	}
 
     // Update is called once per frame
@@ -54,126 +61,154 @@ public class PlayerController : MonoBehaviour {
     {
         //MOVEMENT
         // handle "sticking" when stopped horizontally
-        if (m_physics.movementStopped) {
-            m_targetSpeed = 0;
-            m_currentSpeed = 0;
+        if (physics.movementStopped) {
+            targetSpeed = 0;
+            currentSpeed = 0;
         }
+		if(!damaged) {
+	        //handle grounded movement
+	        if (physics.grounded) {
+	            amountToMove.y = 0;
 
-        //handle grounded movement
-        if (m_physics.grounded) {
-            m_amountToMove.y = 0;
+	            if (jumping) {
+	                jumping = false;
+					animator.SetBool("Jumping", false);
+					animator.SetBool ("Falling", false);
+				}
 
-            if (m_jumping) {
-                m_jumping = false;
-				m_animator.SetBool("Jumping", false);
-				m_animator.SetBool ("Falling", false);
-			}
+	            if (!sliding) {
+	                if ((Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump")) || Input.GetButtonDown("Slide")) {
+	                    sliding = true;
+	                    animator.SetBool("Sliding", true);
+	                    //physics.SetSlideCollider(false);
+	                    slideStartTime = Time.time;
+	                }
+	            }
 
-            if (!m_sliding) {
-                if ((Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump")) || Input.GetButtonDown("Slide")) {
-                    m_sliding = true;
-                    m_animator.SetBool("Sliding", true);
-                    //m_physics.SetSlideCollider(false);
-                    m_slideStartTime = Time.time;
-                }
-            }
+	            // Jump
+	            if (Input.GetButtonDown("Jump") && !sliding) {
+	                amountToMove.y = jumpSpeed;
+	                jumping = true;
+					animator.SetBool("Jumping", true);
+	            }
+	        }
 
-            // Jump
-            if (Input.GetButtonDown("Jump") && !m_sliding) {
-                m_amountToMove.y = jumpSpeed;
-                m_jumping = true;
-				m_animator.SetBool("Jumping", true);
-            }
-        }
-
-	    //handle directional input
-        if (!m_sliding) {
-            m_targetSpeed = (Input.GetAxisRaw("Horizontal") != 0) ? Mathf.Sign(Input.GetAxisRaw("Horizontal")) * speed : 0;
-            m_currentSpeed = IncrementTowards(m_currentSpeed, m_targetSpeed, acceleration);
-        }
-        else {
-            if (Time.time - m_slideStartTime >= slideDuration) {
-                // stop sliding
-                m_sliding = false;
-                m_animator.SetBool("Sliding", false);
-                //m_physics.SetSlideCollider(true);
-            }
-            else {
-                // move in correct direction
-                /*if (m_targetSpeed == 0) {
-                    // right if facing right and left if facing left
-                    m_currentSpeed = (transform.eulerAngles.y == 0) ? speed : -speed;
-                }*/
-				m_currentSpeed = ((transform.eulerAngles.y == 0) ? speed : -speed) * m_slideSpeedMultiplier;
-            }
-        }
+		    //handle directional input
+	        if (!sliding) {
+	            targetSpeed = (Input.GetAxisRaw("Horizontal") != 0) ? Mathf.Sign(Input.GetAxisRaw("Horizontal")) * speed : 0;
+	            currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
+	        }
+	        else {
+	            if (Time.time - slideStartTime >= slideDuration) {
+	                // stop sliding
+	                sliding = false;
+	                animator.SetBool("Sliding", false);
+	                //physics.SetSlideCollider(true);
+	            }
+	            else {
+	                // move in correct direction
+	                /*if (targetSpeed == 0) {
+	                    // right if facing right and left if facing left
+	                    currentSpeed = (transform.eulerAngles.y == 0) ? speed : -speed;
+	                }*/
+					currentSpeed = ((transform.eulerAngles.y == 0) ? speed : -speed) * slideSpeedMultiplier;
+	            }
+	        }
      
-        // need to keep track of which direction the character is facing
-        float facing = Mathf.Sign(m_targetSpeed);
-        if (facing != 0 && m_targetSpeed != 0) {
-            // Flip the character sprite if going left
-            transform.eulerAngles = (facing < 0) ? Vector3.up * 180 : Vector3.zero;
-        }
+	        // need to keep track of which direction the character is facing
+	        float facing = Mathf.Sign(targetSpeed);
+	        if (facing != 0 && targetSpeed != 0) {
+	            // Flip the character sprite if going left
+	            transform.eulerAngles = (facing < 0) ? Vector3.up * 180 : Vector3.zero;
+	        }
 
-		m_animator.SetFloat("Speed", Mathf.Abs(m_currentSpeed));
+			if(invincible) {
+				Debug.Log ("invincibility check");
+				//blink character to show invincibility after damage
+				if(Time.time - damageTime <= invincibleTime) {
+					if((Time.frameCount % 60) % 5 == 0) {
+						sprite.enabled = (sprite.enabled) ? false : true;
+					}
+				} else {
+					Debug.Log ("invincibility done");
+					sprite.enabled = true;
+					invincible = false;
+				}
+			}
+		} else {
+			if(!physics.grounded) {
+				amountToMove.y = (amountToMove.y >= 5) ? 5 : amountToMove.y;
+			}
+			currentSpeed = (transform.eulerAngles == Vector3.zero) ? -5.0f : 5.0f;
 
-        if (Input.GetButtonUp("Jump")) {
-            m_amountToMove.y = (m_amountToMove.y >= 5) ? 5 : m_amountToMove.y;
-        }
-        m_amountToMove.x = m_currentSpeed;
-        m_amountToMove.y -= gravity * Time.deltaTime;
-
-		if(m_jumping) Debug.Log ("jump speed: " + jumpSpeed + ", negative speed: " + m_amountToMove.y );
-		if(m_jumping && m_amountToMove.y < -5.0) {
-			m_animator.SetBool("Falling", true);
+			if(Time.time - damageTime >= (invincibleTime / 3.0f)) {
+				damaged = false;
+				currentSpeed = 0;
+			}
 		}
 
-        m_physics.Move(m_amountToMove * Time.deltaTime);
+		animator.SetFloat("Speed", Mathf.Abs(currentSpeed));
+
+        if (Input.GetButtonUp("Jump")) {
+            amountToMove.y = (amountToMove.y >= 2) ? 5 : amountToMove.y;
+        }
+        amountToMove.x = currentSpeed;
+        amountToMove.y -= gravity * Time.deltaTime;
+
+		//if(jumping) Debug.Log ("jump speed: " + jumpSpeed + ", negative speed: " + amountToMove.y );
+		if(jumping && amountToMove.y < -5.0) {
+			animator.SetBool("Falling", true);
+		}
+
+        physics.Move(amountToMove * Time.deltaTime);
 
         // FIRING
-        if (Input.GetButtonDown("Fire") && GameObject.FindGameObjectsWithTag("PlayerProjectile").Length < 3 && !m_sliding) {
+        if (Input.GetButtonDown("Fire") && GameObject.FindGameObjectsWithTag("PlayerProjectile").Length < 3 && !sliding) {
             // can fire anytime except when sliding
-            m_charging = true;
+            charging = true;
             bulletPool.CreateObject(1);
-            m_lastShotTime = Time.time;
-			m_animator.SetBool("Shooting", true);
+            lastShotTime = Time.time;
+			animator.SetBool("Shooting", true);
         }
 
-        if (m_charging) {
-            float chargeTime = Time.time - m_lastShotTime;
+        if (charging) {
+            float chargeTime = Time.time - lastShotTime;
             Debug.Log("chargetime: " + chargeTime + " , chargethresh: " + chargeThreshold);
             if(Input.GetButton("Fire")) {
                 if (chargeTime >= chargeThreshold) {
                     Debug.Log("FULLY CHARGED");
-                    m_animator.SetInteger("ChargeLevel", 2);
+                    animator.SetInteger("ChargeLevel", 2);
                 }
                 else if (chargeTime >= (chargeThreshold / 3.0f)) {
                     Debug.Log("HALF CHARGED");
-                    m_animator.SetInteger("ChargeLevel", 1);
+                    animator.SetInteger("ChargeLevel", 1);
                 }
             } else {
-                m_charging = false;
+                charging = false;
 
                 if (chargeTime >= chargeThreshold) {
 					bulletPool.CreateObject(2);
-                    m_animator.SetInteger("ChargeLevel", 0);
+                    animator.SetInteger("ChargeLevel", 0);
                 }
                 else if (chargeTime >= chargeThreshold / 3.0f) {
 					bulletPool.CreateObject(3);
-                    m_animator.SetInteger("ChargeLevel", 0);
+                    animator.SetInteger("ChargeLevel", 0);
                 }
-				m_lastShotTime = Time.time;
+				lastShotTime = Time.time;
             }
-        } else if(m_animator.GetBool("Shooting") && (Time.time - m_lastShotTime) >= 1.0f) {
-			m_animator.SetBool("Shooting", false);
+        } else if(animator.GetBool("Shooting") && (Time.time - lastShotTime) >= 1.0f) {
+			animator.SetBool("Shooting", false);
 		}
 	}
 
 	void OnTriggerEnter2D(Collider2D collider)
 	{
-		if( collider.tag == "Enemy"){
+		if( collider.tag == "Enemy" && !invincible){
 			Debug.Log("collided with enemy");
-			m_entity.TakeDamage(1);
+			damaged = true;
+			invincible = true;
+			entity.TakeDamage(1);
+			damageTime = Time.time;
 		}
 	}
 
