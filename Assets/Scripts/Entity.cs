@@ -17,6 +17,26 @@ public class Entity : MonoBehaviour {
     public void Die()
     {
         Debug.Log(transform.name + " is dead");
-        Destroy(gameObject);
+		Animator animator = GetComponent<Animator>();
+		if(animator == null) {
+			Destroy(gameObject);
+		} else {
+			animator.SetBool ("Dead", true);
+		}
     }
+
+	// called from death animation
+	public void DestroyEntity()
+	{
+		if(gameObject.tag == "Player") {
+			// temp respawn stuff
+			Animator animator = GetComponent<Animator>();
+			gameObject.SetActive(false);
+			animator.SetBool ("Dead", false);
+			gameObject.transform.position = Vector2.zero;
+			gameObject.SetActive(true);
+		} else {
+			Destroy(gameObject);
+		}
+	}
 }
