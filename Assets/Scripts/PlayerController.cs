@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour {
 
 	//damage vars
 	public float invincibleTime;
-	private float damageTime;
+	private float timeDamaged;
 
     // state booleans
     private bool jumping;
@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour {
 			if(invincible) {
 				Debug.Log ("invincibility check");
 				//blink character to show invincibility after damage
-				if(Time.time - damageTime <= invincibleTime) {
+				if(Time.time - timeDamaged <= invincibleTime) {
 					if((Time.frameCount % 60) % 5 == 0) {
 						sprite.enabled = (sprite.enabled) ? false : true;
 					}
@@ -136,13 +136,15 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 		} else {
+			// Damaged
 			if(!physics.grounded) {
 				amountToMove.y = (amountToMove.y >= 5) ? 5 : amountToMove.y;
 			}
-			currentSpeed = (transform.eulerAngles == Vector3.zero) ? -5.0f : 5.0f;
+			currentSpeed = (transform.eulerAngles == Vector3.zero) ? -8.0f : 8.0f;
 
-			if(Time.time - damageTime >= (invincibleTime / 3.0f)) {
+			if(Time.time - timeDamaged >= (invincibleTime / 5.0f)) {
 				damaged = false;
+				animator.SetBool("Hit", false);
 				currentSpeed = 0;
 			}
 		}
@@ -207,8 +209,13 @@ public class PlayerController : MonoBehaviour {
 			Debug.Log("collided with enemy");
 			damaged = true;
 			invincible = true;
+			animator.SetBool("Hit", true);
 			entity.TakeDamage(1);
-			damageTime = Time.time;
+			timeDamaged = Time.time;
+		}
+
+		if( collider.tag == "Death") {
+			entity.Die();
 		}
 	}
 
@@ -220,7 +227,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         float direction = Mathf.Sign(target - curr); // The sign of scceleration
-        curr += accel * Time.deltaTime * direction;
+        curr += 500 * Time.deltaTime * direction;
         return (Mathf.Sign(target - curr) == direction) ? curr : target; // if curr has passed target, return target
     }
 }
